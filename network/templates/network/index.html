@@ -1,0 +1,28 @@
+{% extends "network/pagination.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block bodyy %}
+
+{% if message %}
+<div>{{ message }}</div>
+{% endif %}
+
+<div class="top-class">
+    {% if user.is_authenticated and request.resolver_match.url_name == "index" %}  
+        <form action="{% url 'newpost' %}" method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <input type="submit" class="btn btn-primary" value="Post">
+        </form>
+    {% endif %}
+</div>
+
+{{ posts|json_script:"post-data" }}
+{{ user.is_authenticated|json_script:"loggedIn" }}
+
+<div id="card-holder">
+</div>
+
+<script src="{% static 'network/posts.js' %}"></script>
+{% endblock %}
