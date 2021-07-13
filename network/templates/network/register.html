@@ -1,0 +1,85 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+
+<div class="top-class">
+
+    <h2>Register</h2>
+
+    {% if message %}
+        <div>{{ message }}</div>
+    {% endif %}
+
+    <div class="alert alert-danger"></div>
+
+    <form action="{% url 'register' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <input class="form-control" autofocus type="text" id="username" name="username" placeholder="Username">
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="email" name="email" placeholder="Email Address">
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="password" name="password" placeholder="Password">
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="password" name="confirmation" placeholder="Confirm Password">
+        </div>
+        <input id="submit" class="btn btn-primary" type="submit" value="Register">
+    </form>
+
+    Already have an account? <a href="{% url 'login' %}">Log In here.</a>
+</div>
+
+<script>
+
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    let user = document.querySelector('#username');
+    let alert = document.getElementsByClassName('alert')[0];
+    alert.style.display = "none";
+    user.addEventListener('focusout', () => {
+            let csrftoken = getCookie('csrftoken');
+            const username = user.value;
+            // console.log(username)
+            fetch('/check', {
+            method: 'POST',
+            body: JSON.stringify({
+                username: username,
+                }),
+                headers: { "X-CSRFToken": csrftoken },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.available) {
+                    console.log(data);
+                    alert.style.display = "block";
+                    alert.innerText = data.error;
+                    user.classList.add("is-invalid");
+                }
+                else {
+                    alert.style.display = "none";
+                    alert.innerText = "";
+                    user.classList.remove("is-invalid");
+                }
+            })
+        }
+    )
+</script>
+
+{% endblock %}

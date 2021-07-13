@@ -1,0 +1,17 @@
+{% extends "network/pagination.html" %}
+{% load static %}
+
+{% block bodyy %}
+{{ details|json_script:"user-data" }}
+{{ posts|json_script:"post-data" }}
+{{ user.is_authenticated|json_script:"loggedIn" }}
+
+<div class="top-class" id="follow"></div>
+<script src="{% static 'network/follow.js' %}">
+</script>
+    
+<div id="card-holder">
+</div>
+
+<script src="{% static 'network/posts.js' %}"></script>
+{% endblock %}
